@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -85,8 +86,22 @@ DATABASES = {
     }
 }
 
+#Cors Headers
+CORS_ORIGIN_ALLOW_ALL = False # Set to true for testing only :) 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Vite React frontend
+]
 
+# Allow CSRF from frontend
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+]
 
+# Set CSRF cookie settings
+CSRF_COOKIE_SECURE = False  # Change to True in production with HTTPS
+CSRF_COOKIE_HTTPONLY = False  # Allows frontend access
+CSRF_COOKIE_SAMESITE = "Lax"  # Works well for same-origin requests
+SESSION_COOKIE_SAMESITE = "Lax"
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
