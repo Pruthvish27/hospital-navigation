@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const ReportMapping = () => {
   const navigate = useNavigate();
@@ -68,8 +69,20 @@ const ReportMapping = () => {
     },
   ];
 
+  // Animation variants for the test category blocks
+  const blockVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="min-h-screen flex flex-col items-center bg-white p-6">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen flex flex-col items-center bg-white p-6"
+    >
       {/* Hospital Name */}
       <h1 className="text-6xl font-bold text-[#2E8B57] text-center mt-8">
         Hospital Test Categories
@@ -80,22 +93,27 @@ const ReportMapping = () => {
         {/* Flex container for horizontal scrolling */}
         <div className="flex space-x-6 w-max">
           {pages.map((box, index) => (
-            <div
+            <motion.div
               key={index}
-              className="w-[360px] min-w-[360px] h-[260px] p-6 bg-white rounded-2xl shadow-md border-3 border-[#8FBC8F] flex flex-col transition-transform duration-300 hover:scale-105"
+              variants={blockVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: index * 0.1, duration: 0.5 }}
             >
-              {/* Category Title with Emoji */}
-              <h3 className="text-3xl font-bold text-[#2E8B57] mb-4 flex items-center">
-                <span className="mr-2 text-4xl">{box.emoji}</span> {box.title}
-              </h3>
-              <ul className="list-none p-0">
-                {box.items.map((item, itemIndex) => (
-                  <li key={itemIndex} className="text-xl mb-2">
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
+              <div className="w-[360px] min-w-[360px] h-[260px] p-6 bg-white rounded-2xl shadow-md border-3 border-[#8FBC8F] flex flex-col transition-transform duration-300 hover:scale-105">
+                {/* Category Title with Emoji */}
+                <h3 className="text-2xl font-bold text-[#2E8B57] mb-4 flex items-center">
+                  <span className="mr-2 text-3xl">{box.emoji}</span> {box.title}
+                </h3>
+                <ul className="list-none p-0">
+                  {box.items.map((item, itemIndex) => (
+                    <li key={itemIndex} className="text-lg mb-2">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -109,7 +127,7 @@ const ReportMapping = () => {
           🏠 Back to Home
         </Button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

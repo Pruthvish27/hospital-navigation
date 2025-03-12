@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -26,7 +27,13 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen flex justify-between items-center bg-white px-[10%]">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen flex justify-between items-center bg-white px-[10%]"
+    >
       {/* Hospital Name */}
       <div className="text-6xl font-bold text-[#2E8B57] uppercase">
         HOSPITAL NAME
@@ -88,7 +95,7 @@ const Home = () => {
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

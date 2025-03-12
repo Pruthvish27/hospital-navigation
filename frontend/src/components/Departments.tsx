@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 type DepartmentDetails = {
   Pediatrics: string;
@@ -44,8 +45,20 @@ const Departments = () => {
     setSelectedDept(null);
   };
 
+  // Animation variants for the department blocks
+  const blockVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#f8f8f8] p-4">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen flex flex-col items-center justify-center bg-[#f8f8f8] p-4"
+    >
       {/* Hospital Name */}
       <h1 className="text-5xl font-bold text-[#2E8B57] uppercase mb-8 text-center">
         HOSPITAL DEPARTMENTS
@@ -56,27 +69,41 @@ const Departments = () => {
         <div className="flex justify-between gap-8">
           {/* Left Column */}
           <div className="flex flex-col gap-4">
-            {["Pediatrics", "Gynecology", "Orthopedics", "Neurology", "Nephrology"].map((dept) => (
-              <Button
+            {["Pediatrics", "Gynecology", "Orthopedics", "Neurology", "Nephrology"].map((dept, index) => (
+              <motion.div
                 key={dept}
-                onClick={() => showDetails(dept as keyof DepartmentDetails)}
-                className="w-[300px] py-6 bg-white text-[#2E8B57] text-xl font-bold rounded-xl shadow-md border-3 border-[#8FBC8F] hover:bg-[#98FB98] hover:scale-105 hover:text-[#556B2F] transition-all duration-300"
+                variants={blockVariants}
+                initial="hidden"
+                animate="visible"
+                transition={{ delay: index * 0.1, duration: 0.5 }}
               >
-                {dept}
-              </Button>
+                <Button
+                  onClick={() => showDetails(dept as keyof DepartmentDetails)}
+                  className="w-[300px] py-6 bg-white text-[#2E8B57] text-xl font-bold rounded-xl shadow-md border-3 border-[#8FBC8F] hover:bg-[#98FB98] hover:scale-105 hover:text-[#556B2F] transition-all duration-300"
+                >
+                  {dept}
+                </Button>
+              </motion.div>
             ))}
           </div>
 
           {/* Right Column */}
           <div className="flex flex-col gap-4">
-            {["Cardiology", "Gastroenterology", "Oncology", "O.P.D", "Otolaryngology (ENT)"].map((dept) => (
-              <Button
+            {["Cardiology", "Gastroenterology", "Oncology", "O.P.D", "Otolaryngology (ENT)"].map((dept, index) => (
+              <motion.div
                 key={dept}
-                onClick={() => showDetails(dept as keyof DepartmentDetails)}
-                className="w-[300px] py-6 bg-white text-[#2E8B57] text-xl font-bold rounded-xl shadow-md border-3 border-[#8FBC8F] hover:bg-[#98FB98] hover:scale-105 hover:text-[#556B2F] transition-all duration-300"
+                variants={blockVariants}
+                initial="hidden"
+                animate="visible"
+                transition={{ delay: (index + 5) * 0.1, duration: 0.5 }}
               >
-                {dept}
-              </Button>
+                <Button
+                  onClick={() => showDetails(dept as keyof DepartmentDetails)}
+                  className="w-[300px] py-6 bg-white text-[#2E8B57] text-xl font-bold rounded-xl shadow-md border-3 border-[#8FBC8F] hover:bg-[#98FB98] hover:scale-105 hover:text-[#556B2F] transition-all duration-300"
+                >
+                  {dept}
+                </Button>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -115,7 +142,7 @@ const Departments = () => {
           🏠 Back to Home
         </Button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
