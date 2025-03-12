@@ -16,6 +16,10 @@ const RoomInfo = () => {
     setShowDetails(false);
   };
 
+  const floors = [
+    "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th"
+  ];
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#f8f8f8] p-4">
       {/* Container */}
@@ -41,13 +45,13 @@ const RoomInfo = () => {
           </Button>
         </div>
 
-        {/* Information Block */}
-        <div className="bg-white border-3 border-[#8FBC8F] rounded-lg p-6 shadow-md">
-          <h2 className="text-3xl font-bold text-[#2E8B57] underline mb-6">
+        {/* Scrollable Information Box (Vertical Scroll) */}
+        <div className="bg-white border-3 border-[#8FBC8F] rounded-lg p-6 shadow-md max-h-[400px] overflow-y-auto">
+          <h2 className="text-3xl font-bold text-[#2E8B57] underline mb-4">
             INFORMATION :-
           </h2>
           <div className="space-y-4">
-            {["1st", "2nd", "3rd"].map((floor) => (
+            {floors.map((floor) => (
               <div
                 key={floor}
                 className="flex justify-between items-center p-4 border-b-2 border-[#2E8B57] hover:bg-[#E0F8E0] transition-all duration-300"

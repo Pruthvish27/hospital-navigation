@@ -2,6 +2,19 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
+type DepartmentDetails = {
+  Pediatrics: string;
+  Gynecology: string;
+  Orthopedics: string;
+  Neurology: string;
+  Nephrology: string;
+  Cardiology: string;
+  Gastroenterology: string;
+  Oncology: string;
+  "O.P.D": string;
+  "Otolaryngology (ENT)": string;
+};
+
 const Departments = () => {
   const [selectedDept, setSelectedDept] = useState<{
     title: string;
@@ -10,7 +23,7 @@ const Departments = () => {
 
   const navigate = useNavigate();
 
-  const departmentDetails = {
+  const departmentDetails: DepartmentDetails = {
     Pediatrics: "Pediatrics focuses on medical care for infants, children, and adolescents.",
     Gynecology: "Gynecology is dedicated to women's reproductive health and care.",
     Orthopedics: "Orthopedics deals with bones, joints, and muscles.",
@@ -23,7 +36,7 @@ const Departments = () => {
     "Otolaryngology (ENT)": "ENT focuses on ear, nose, and throat conditions.",
   };
 
-  const showDetails = (dept: string) => {
+  const showDetails = (dept: keyof DepartmentDetails) => {
     setSelectedDept({ title: dept, info: departmentDetails[dept] });
   };
 
@@ -46,7 +59,7 @@ const Departments = () => {
             {["Pediatrics", "Gynecology", "Orthopedics", "Neurology", "Nephrology"].map((dept) => (
               <Button
                 key={dept}
-                onClick={() => showDetails(dept)}
+                onClick={() => showDetails(dept as keyof DepartmentDetails)}
                 className="w-[300px] py-6 bg-white text-[#2E8B57] text-xl font-bold rounded-xl shadow-md border-3 border-[#8FBC8F] hover:bg-[#98FB98] hover:scale-105 hover:text-[#556B2F] transition-all duration-300"
               >
                 {dept}
@@ -59,7 +72,7 @@ const Departments = () => {
             {["Cardiology", "Gastroenterology", "Oncology", "O.P.D", "Otolaryngology (ENT)"].map((dept) => (
               <Button
                 key={dept}
-                onClick={() => showDetails(dept)}
+                onClick={() => showDetails(dept as keyof DepartmentDetails)}
                 className="w-[300px] py-6 bg-white text-[#2E8B57] text-xl font-bold rounded-xl shadow-md border-3 border-[#8FBC8F] hover:bg-[#98FB98] hover:scale-105 hover:text-[#556B2F] transition-all duration-300"
               >
                 {dept}
@@ -69,10 +82,10 @@ const Departments = () => {
         </div>
       </div>
 
-      {/* Overlay (Fixed: Changed to blue tint) */}
+      {/* Overlay with Blur Effect */}
       {selectedDept && (
         <div
-          className="fixed inset-0 bg-blue-500 bg-opacity-30 backdrop-blur-sm z-50"
+          className="fixed inset-0 bg-blue-500/30 backdrop-blur-sm z-50"
           onClick={closeDetails}
         ></div>
       )}
@@ -107,4 +120,3 @@ const Departments = () => {
 };
 
 export default Departments;
- 
