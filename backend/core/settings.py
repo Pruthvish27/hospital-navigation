@@ -10,7 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
+import environ
 from pathlib import Path
+
+
+env = environ.Env()
+environ.Env.read_env(os.path.join(Path(__file__).resolve().parent.parent, ".env"))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-d2!rzl^ok)_an9n4+4pwr+yodcb318e+dz=z+45!^rwuox*^h4'
+SECRET_KEY = 'django-insecure-+2^)09))46_0teqjdlrpb=y%d094ogwq6dk1q*1xu1n^xalc7&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,7 +43,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'testapp',  # Added this line
 ]
 
 MIDDLEWARE = [
@@ -78,11 +83,11 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',  # Supabase default DB name
-        'USER': 'postgres',
-        'PASSWORD': 'rootmywill',  # Your password
-        'HOST': 'db.nucutcyuiznpgrlxzlte.supabase.co',
-        'PORT': '5432',
+        'NAME': env("DB_NAME"),
+        'USER': env("DB_USER"),
+        'PASSWORD': env("DB_PASSWORD"),
+        'HOST': env("DB_HOST"),
+        'PORT': env("DB_PORT", default="5432"),
     }
 }
 
@@ -92,6 +97,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Vite React frontend
 ]
 
+<<<<<<< Updated upstream
 # Allow CSRF from frontend
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
@@ -103,6 +109,8 @@ CSRF_COOKIE_HTTPONLY = False  # Allows frontend access
 CSRF_COOKIE_SAMESITE = "Lax"  # Works well for same-origin requests
 SESSION_COOKIE_SAMESITE = "Lax"
 
+=======
+>>>>>>> Stashed changes
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 

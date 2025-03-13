@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+<<<<<<< Updated upstream
 import { useState } from "react";
 
 const Home = () => {
@@ -32,6 +33,12 @@ const Home = () => {
     setData(result.entries);
     setShowSeeDataPopup(true);
   };
+=======
+import { motion } from "framer-motion";
+
+const Home = () => {
+  const navigate = useNavigate();
+>>>>>>> Stashed changes
 
   return (
     <div className="min-h-screen flex justify-between items-center bg-white px-[10%]">
@@ -60,15 +67,15 @@ const Home = () => {
         >
           Report Mapping
         </Button>
-
-        {/* Test Button */}
-        <Button
-          onClick={() => setShowPopup(true)}
-          className="w-[150px] px-4 py-3 bg-blue-500 text-white text-lg font-bold rounded-lg shadow-md transition-all duration-300 hover:bg-blue-600"
-        >
-          Test
-        </Button>
+        {/* Floating Button in Bottom Left */}
+      <button
+        onClick={() => navigate("/database")}
+        className="fixed bottom-6 left-6 bg-blue-500 text-white px-6 py-3 rounded-full shadow-lg hover:bg-blue-600 transition"
+      >
+        Open Database
+      </button>
       </div>
+<<<<<<< Updated upstream
 
       {/* Popup for Test */}
       {showPopup && (
@@ -154,6 +161,9 @@ const Home = () => {
         </div>
       )}
     </div>
+=======
+    </motion.div>
+>>>>>>> Stashed changes
   );
 };
 
