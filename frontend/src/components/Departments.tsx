@@ -1,6 +1,45 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+<<<<<<< Updated upstream
+=======
+import { motion, AnimatePresence } from "framer-motion";
+import Particles from "react-tsparticles";
+import { loadFull } from "tsparticles";
+
+// Import images for each department (replace with your actual image paths)
+import pediatricsImage from "@/assets/doctor-cabin.jpg"; // Image for Pediatrics
+import gynecologyImage from "@/assets/doctor-cabin.jpg"; // Image for Gynecology
+import orthopedicsImage from "@/assets/doctor-cabin.jpg"; // Image for Orthopedics
+import neurologyImage from "@/assets/doctor-cabin.jpg"; // Image for Neurology
+import nephrologyImage from "@/assets/doctor-cabin.jpg"; // Image for Nephrology
+import cardiologyImage from "@/assets/doctor-cabin.jpg"; // Image for Cardiology
+import gastroenterologyImage from "@/assets/doctor-cabin.jpg"; // Image for Gastroenterology
+import oncologyImage from "@/assets/doctor-cabin.jpg"; // Image for Oncology
+import opdImage from "@/assets/doctor-cabin.jpg"; // Image for O.P.D
+import entImage from "@/assets/doctor-cabin.jpg"; // Image for ENT
+
+type DepartmentDetails = {
+  Pediatrics: string;
+  Gynecology: string;
+  Orthopedics: string;
+  Neurology: string;
+  Nephrology: string;
+  Cardiology: string;
+  Gastroenterology: string;
+  Oncology: string;
+  "O.P.D": string;
+  "Otolaryngology (ENT)": string;
+};
+
+type Doctor = {
+  name: string;
+  specialization: string;
+  experience: string;
+  contact: string;
+  image: string; // Image path for each doctor
+};
+>>>>>>> Stashed changes
 
 const Departments = () => {
   const [selectedDept, setSelectedDept] = useState<{
