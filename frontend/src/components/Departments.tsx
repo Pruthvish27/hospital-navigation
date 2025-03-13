@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -7,15 +8,15 @@ import { loadFull } from "tsparticles";
 
 // Import images for each department (replace with your actual image paths)
 import pediatricsImage from "@/assets/doctor-cabin.jpg"; // Image for Pediatrics
-import gynecologyImage from "@/assets/gynecology.jpg"; // Image for Gynecology
-import orthopedicsImage from "@/assets/orthopedics.jpg"; // Image for Orthopedics
-import neurologyImage from "@/assets/neurology.jpg"; // Image for Neurology
-import nephrologyImage from "@/assets/nephrology.jpg"; // Image for Nephrology
-import cardiologyImage from "@/assets/cardiology.jpg"; // Image for Cardiology
-import gastroenterologyImage from "@/assets/gastroenterology.jpg"; // Image for Gastroenterology
-import oncologyImage from "@/assets/oncology.jpg"; // Image for Oncology
-import opdImage from "@/assets/opd.jpg"; // Image for O.P.D
-import entImage from "@/assets/ent.jpg"; // Image for ENT
+import gynecologyImage from "@/assets/doctor-cabin.jpg"; // Image for Gynecology
+import orthopedicsImage from "@/assets/doctor-cabin.jpg"; // Image for Orthopedics
+import neurologyImage from "@/assets/doctor-cabin.jpg"; // Image for Neurology
+import nephrologyImage from "@/assets/doctor-cabin.jpg"; // Image for Nephrology
+import cardiologyImage from "@/assets/doctor-cabin.jpg"; // Image for Cardiology
+import gastroenterologyImage from "@/assets/doctor-cabin.jpg"; // Image for Gastroenterology
+import oncologyImage from "@/assets/doctor-cabin.jpg"; // Image for Oncology
+import entImage from "@/assets/doctor-cabin.jpg"; // Image for ENT
+import opdImage from "@/assets/doctor-cabin.jpg"; // Image for O.P.D
 
 type DepartmentDetails = {
   Pediatrics: string;
@@ -69,14 +70,28 @@ const Departments = () => {
         specialization: "Pediatrics",
         experience: "10+ years",
         contact: "+123 456 7890",
-        image: pediatricsImage, // Unique image for Pediatrics
+        image: pediatricsImage,
       },
       {
         name: "Dr. Jane Smith",
         specialization: "Pediatrics",
         experience: "8+ years",
         contact: "+123 456 7891",
-        image: pediatricsImage, // Unique image for Pediatrics
+        image: pediatricsImage,
+      },
+      {
+        name: "Dr. Emily Davis",
+        specialization: "Pediatrics",
+        experience: "12+ years",
+        contact: "+123 456 7892",
+        image: pediatricsImage,
+      },
+      {
+        name: "Dr. Michael Brown",
+        specialization: "Pediatrics",
+        experience: "9+ years",
+        contact: "+123 456 7893",
+        image: pediatricsImage,
       },
     ],
     Gynecology: [
@@ -85,7 +100,21 @@ const Departments = () => {
         specialization: "Gynecology",
         experience: "12+ years",
         contact: "+123 456 7892",
-        image: gynecologyImage, // Unique image for Gynecology
+        image: gynecologyImage,
+      },
+      {
+        name: "Dr. Sarah Wilson",
+        specialization: "Gynecology",
+        experience: "9+ years",
+        contact: "+123 456 7894",
+        image: gynecologyImage,
+      },
+      {
+        name: "Dr. Laura Martinez",
+        specialization: "Gynecology",
+        experience: "7+ years",
+        contact: "+123 456 7897",
+        image: gynecologyImage,
       },
     ],
     Orthopedics: [
@@ -94,7 +123,21 @@ const Departments = () => {
         specialization: "Orthopedics",
         experience: "15+ years",
         contact: "+123 456 7893",
-        image: orthopedicsImage, // Unique image for Orthopedics
+        image: orthopedicsImage,
+      },
+      {
+        name: "Dr. David Lee",
+        specialization: "Orthopedics",
+        experience: "11+ years",
+        contact: "+123 456 7895",
+        image: orthopedicsImage,
+      },
+      {
+        name: "Dr. Robert Taylor",
+        specialization: "Orthopedics",
+        experience: "14+ years",
+        contact: "+123 456 7896",
+        image: orthopedicsImage,
       },
     ],
     Neurology: [
@@ -103,7 +146,21 @@ const Departments = () => {
         specialization: "Neurology",
         experience: "9+ years",
         contact: "+123 456 7894",
-        image: neurologyImage, // Unique image for Neurology
+        image: neurologyImage,
+      },
+      {
+        name: "Dr. James Anderson",
+        specialization: "Neurology",
+        experience: "13+ years",
+        contact: "+123 456 7898",
+        image: neurologyImage,
+      },
+      {
+        name: "Dr. Olivia Clark",
+        specialization: "Neurology",
+        experience: "10+ years",
+        contact: "+123 456 7899",
+        image: neurologyImage,
       },
     ],
     Nephrology: [
@@ -112,7 +169,21 @@ const Departments = () => {
         specialization: "Nephrology",
         experience: "11+ years",
         contact: "+123 456 7895",
-        image: nephrologyImage, // Unique image for Nephrology
+        image: nephrologyImage,
+      },
+      {
+        name: "Dr. William White",
+        specialization: "Nephrology",
+        experience: "16+ years",
+        contact: "+123 456 7800",
+        image: nephrologyImage,
+      },
+      {
+        name: "Dr. Emily Davis",
+        specialization: "Nephrology",
+        experience: "12+ years",
+        contact: "+123 456 7892",
+        image: nephrologyImage,
       },
     ],
     Cardiology: [
@@ -121,7 +192,21 @@ const Departments = () => {
         specialization: "Cardiology",
         experience: "14+ years",
         contact: "+123 456 7896",
-        image: cardiologyImage, // Unique image for Cardiology
+        image: cardiologyImage,
+      },
+      {
+        name: "Dr. John Doe",
+        specialization: "Cardiology",
+        experience: "10+ years",
+        contact: "+123 456 7890",
+        image: cardiologyImage,
+      },
+      {
+        name: "Dr. Jane Smith",
+        specialization: "Cardiology",
+        experience: "8+ years",
+        contact: "+123 456 7891",
+        image: cardiologyImage,
       },
     ],
     Gastroenterology: [
@@ -130,7 +215,21 @@ const Departments = () => {
         specialization: "Gastroenterology",
         experience: "7+ years",
         contact: "+123 456 7897",
-        image: gastroenterologyImage, // Unique image for Gastroenterology
+        image: gastroenterologyImage,
+      },
+      {
+        name: "Dr. Michael Brown",
+        specialization: "Gastroenterology",
+        experience: "15+ years",
+        contact: "+123 456 7893",
+        image: gastroenterologyImage,
+      },
+      {
+        name: "Dr. Sarah Wilson",
+        specialization: "Gastroenterology",
+        experience: "9+ years",
+        contact: "+123 456 7894",
+        image: gastroenterologyImage,
       },
     ],
     Oncology: [
@@ -139,7 +238,21 @@ const Departments = () => {
         specialization: "Oncology",
         experience: "13+ years",
         contact: "+123 456 7898",
-        image: oncologyImage, // Unique image for Oncology
+        image: oncologyImage,
+      },
+      {
+        name: "Dr. Olivia Clark",
+        specialization: "Oncology",
+        experience: "10+ years",
+        contact: "+123 456 7899",
+        image: oncologyImage,
+      },
+      {
+        name: "Dr. William White",
+        specialization: "Oncology",
+        experience: "16+ years",
+        contact: "+123 456 7800",
+        image: oncologyImage,
       },
     ],
     "O.P.D": [
@@ -148,7 +261,21 @@ const Departments = () => {
         specialization: "General Medicine",
         experience: "10+ years",
         contact: "+123 456 7899",
-        image: opdImage, // Unique image for O.P.D
+        image: opdImage,
+      },
+      {
+        name: "Dr. John Doe",
+        specialization: "General Medicine",
+        experience: "10+ years",
+        contact: "+123 456 7890",
+        image: opdImage,
+      },
+      {
+        name: "Dr. Jane Smith",
+        specialization: "General Medicine",
+        experience: "8+ years",
+        contact: "+123 456 7891",
+        image: opdImage,
       },
     ],
     "Otolaryngology (ENT)": [
@@ -157,7 +284,21 @@ const Departments = () => {
         specialization: "ENT",
         experience: "16+ years",
         contact: "+123 456 7800",
-        image: entImage, // Unique image for ENT
+        image: entImage,
+      },
+      {
+        name: "Dr. Emily Davis",
+        specialization: "ENT",
+        experience: "12+ years",
+        contact: "+123 456 7892",
+        image: entImage,
+      },
+      {
+        name: "Dr. Michael Brown",
+        specialization: "ENT",
+        experience: "15+ years",
+        contact: "+123 456 7893",
+        image: entImage,
       },
     ],
   };
@@ -173,14 +314,6 @@ const Departments = () => {
 
   const closeDetails = () => {
     setSelectedDept(null);
-  };
-
-  const handleScroll = (event: React.WheelEvent<HTMLDivElement>) => {
-    if (event.deltaY > 0) {
-      setCurrentDoctorIndex((prev) => (prev + 1) % (selectedDept?.doctors.length || 1));
-    } else {
-      setCurrentDoctorIndex((prev) => (prev - 1 + (selectedDept?.doctors.length || 1)) % (selectedDept?.doctors.length || 1));
-    }
   };
 
   const blockVariants = {
@@ -361,7 +494,7 @@ const Departments = () => {
             </div>
 
             {/* Right Side: Doctor Details */}
-            <div className="w-1/2 pl-8" onWheel={handleScroll}>
+            <div className="w-1/2 pl-8">
               <Button
                 onClick={closeDetails}
                 className="absolute top-6 right-6 bg-transparent text-black hover:bg-transparent"
@@ -375,16 +508,20 @@ const Departments = () => {
                 {selectedDept.info}
               </p>
 
-              {/* Doctor Details */}
-              <div className="bg-[#F5FFFA] p-6 rounded-lg border-2 border-[#8FBC8F]">
+              {/* Scrollable Doctor Details Box */}
+              <div className="bg-[#F5FFFA] p-6 rounded-lg border-2 border-[#8FBC8F] max-h-[400px] overflow-y-auto">
                 <h3 className="text-3xl font-bold text-[#2E8B57] mb-4">
                   Doctor Details
                 </h3>
                 <ul className="text-xl text-gray-700 space-y-2">
-                  <li>👨‍⚕️ <strong>Name:</strong> {selectedDept.doctors[currentDoctorIndex].name}</li>
-                  <li>🏥 <strong>Specialization:</strong> {selectedDept.doctors[currentDoctorIndex].specialization}</li>
-                  <li>📅 <strong>Experience:</strong> {selectedDept.doctors[currentDoctorIndex].experience}</li>
-                  <li>📞 <strong>Contact:</strong> {selectedDept.doctors[currentDoctorIndex].contact}</li>
+                  {selectedDept.doctors.map((doctor, index) => (
+                    <li key={index}>
+                      <p>👨‍⚕ <strong>Name:</strong> {doctor.name}</p>
+                      <p>🏥 <strong>Specialization:</strong> {doctor.specialization}</p>
+                      <p>📅 <strong>Experience:</strong> {doctor.experience}</p>
+                      <p>📞 <strong>Contact:</strong> {doctor.contact}</p>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>
