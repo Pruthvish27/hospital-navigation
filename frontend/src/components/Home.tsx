@@ -1,30 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { motion } from "framer-motion";
 
 const Home = () => {
   const navigate = useNavigate();
-  const [showPopup, setShowPopup] = useState(false);
-
-  const handleAddData = async () => {
-    const response = await fetch("http://localhost:8000/api/test/add/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name: "Test Entry" }),
-    });
-    const data = await response.json();
-    alert(data.message);
-  };
-
-  const handleSeeData = async () => {
-    const response = await fetch("http://localhost:8000/api/test/get/");
-    const data = await response.json();
-    console.log(data);
-    alert("Check console for data!");
-  };
 
   return (
     <motion.div
@@ -32,7 +11,7 @@ const Home = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen flex justify-between items-center bg-white px-[10%]"
+      className="min-h-screen flex justify-between items-center bg-gradient-to-b from-[#f8f8f8] to-[#e0f8e0] px-[10%]"
     >
       {/* Hospital Name */}
       <div className="text-6xl font-bold text-[#2E8B57] uppercase">
@@ -40,61 +19,26 @@ const Home = () => {
       </div>
 
       {/* Menu Buttons */}
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-6"> {/* Increased gap between buttons */}
         <Button
           onClick={() => navigate("/departments")}
-          className="w-[350px] px-8 py-6 bg-[#F5FFFA] text-[#556B2F] text-2xl font-bold rounded-lg shadow-md border-2 border-[#8FBC8F] transition-all duration-300 hover:bg-[#98FB98] hover:scale-105 hover:border-[#556B2F] text-center"
+          className="w-[400px] px-10 py-8 bg-gradient-to-r from-[#2E8B57] to-[#3CB371] text-white text-3xl font-bold rounded-lg shadow-md hover:from-[#3CB371] hover:to-[#2E8B57] hover:scale-105 transition-all duration-300"
         >
           Departments
         </Button>
         <Button
           onClick={() => navigate("/room_info")}
-          className="w-[350px] px-8 py-6 bg-[#F5FFFA] text-[#556B2F] text-2xl font-bold rounded-lg shadow-md border-2 border-[#8FBC8F] transition-all duration-300 hover:bg-[#98FB98] hover:scale-105 hover:border-[#556B2F] text-center"
+          className="w-[400px] px-10 py-8 bg-gradient-to-r from-[#2E8B57] to-[#3CB371] text-white text-3xl font-bold rounded-lg shadow-md hover:from-[#3CB371] hover:to-[#2E8B57] hover:scale-105 transition-all duration-300"
         >
           Rooms Information
         </Button>
         <Button
           onClick={() => navigate("/report_mapping")}
-          className="w-[350px] px-8 py-6 bg-[#F5FFFA] text-[#556B2F] text-2xl font-bold rounded-lg shadow-md border-2 border-[#8FBC8F] transition-all duration-300 hover:bg-[#98FB98] hover:scale-105 hover:border-[#556B2F] text-center"
+          className="w-[400px] px-10 py-8 bg-gradient-to-r from-[#2E8B57] to-[#3CB371] text-white text-3xl font-bold rounded-lg shadow-md hover:from-[#3CB371] hover:to-[#2E8B57] hover:scale-105 transition-all duration-300"
         >
           Report Mapping
         </Button>
-
-        {/* Test Button */}
-        <Button
-          onClick={() => setShowPopup(true)}
-          className="w-[150px] px-4 py-3 bg-blue-500 text-white text-lg font-bold rounded-lg shadow-md transition-all duration-300 hover:bg-blue-600"
-        >
-          Test
-        </Button>
       </div>
-
-      {/* Popup for Test */}
-      {showPopup && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <h2 className="text-xl font-bold mb-4">Test Database</h2>
-            <Button
-              onClick={handleAddData}
-              className="bg-green-500 text-white px-4 py-2 m-2 rounded"
-            >
-              Add Data
-            </Button>
-            <Button
-              onClick={handleSeeData}
-              className="bg-blue-500 text-white px-4 py-2 m-2 rounded"
-            >
-              See Data
-            </Button>
-            <Button
-              onClick={() => setShowPopup(false)}
-              className="bg-red-500 text-white px-4 py-2 m-2 rounded"
-            >
-              Close
-            </Button>
-          </div>
-        </div>
-      )}
     </motion.div>
   );
 };
