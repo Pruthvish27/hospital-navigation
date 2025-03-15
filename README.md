@@ -170,8 +170,8 @@ Git (for cloning the repository)
 First, clone the repository to your local machine:
 
 
-``git clone https://github.com/your-username/hospital-management-system.git
-cd hospital-management-system``
+``gh repo clone Pruthvish27/hospital-navigation
+cd hospital-navigation``
 Step 2: Set Up the Frontend
 Navigate to the frontend directory:
 
