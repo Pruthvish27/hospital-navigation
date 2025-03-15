@@ -206,7 +206,9 @@ venv\Scripts\activate
 ```
 Install the required Python packages:
 
-``ip install -r requirements.txt``
+```
+pip install -r requirements.txt
+```
 Set up the database:
 
 `Ensure you have a PostgreSQL database running.`
