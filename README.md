@@ -170,28 +170,40 @@ Git (for cloning the repository)
 First, clone the repository to your local machine:
 
 
-``gh repo clone Pruthvish27/hospital-navigation
-cd hospital-navigation``
+```
+gh repo clone Pruthvish27/hospital-navigation
+cd hospital-navigation
+```
 Step 2: Set Up the Frontend
 Navigate to the frontend directory:
 
-`cd frontend`
+```
+cd frontend
+```
 Install the required dependencies:
 
-`npm install`
+```
+npm install
+```
 Start the development server:
 
-`npm run dev`
+```
+npm run dev
+```
 The frontend should now be running on `http://localhost:3000`.
 
 Step 3: Set Up the Backend
 Navigate to the backend directory:
 
-`cd ../backend`
+```
+cd ../backend
+```
 Create a virtual environment and activate it:
 
-``python -m venv venv
-venv\Scripts\activate``
+```
+python -m venv venv
+venv\Scripts\activate
+```
 Install the required Python packages:
 
 ``ip install -r requirements.txt``
@@ -203,10 +215,14 @@ Set up the database:
 
 Run migrations:
 
-`python manage.py migrate`
+```
+python manage.py migrate
+```
 Start the Django development server:
 
-`python manage.py runserver`
+```
+python manage.py runserver
+```
 The backend should now be running on `http://localhost:8000`.
 
 ### Step 4: Set Up Supabase (Database)
