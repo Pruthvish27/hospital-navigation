@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,10 +8,27 @@ import { supabase } from "@/utils/supabaseClient"; // Import your Supabase clien
 
 // Import images for each department (replace with your actual image paths)
 import pediatricsImage from "@/assets/doctor-cabin.jpg"; // Image for Pediatrics
+import gynecologyImage from "@/assets/doctor-cabin.jpg"; // Image for Gynecology
+import orthopedicsImage from "@/assets/doctor-cabin.jpg"; // Image for Orthopedics
+import neurologyImage from "@/assets/doctor-cabin.jpg"; // Image for Neurology
+import nephrologyImage from "@/assets/doctor-cabin.jpg"; // Image for Nephrology
+import cardiologyImage from "@/assets/doctor-cabin.jpg"; // Image for Cardiology
+import gastroenterologyImage from "@/assets/doctor-cabin.jpg"; // Image for Gastroenterology
+import oncologyImage from "@/assets/doctor-cabin.jpg"; // Image for Oncology
+import entImage from "@/assets/doctor-cabin.jpg"; // Image for ENT
+import opdImage from "@/assets/doctor-cabin.jpg"; // Image for O.P.D
 
-type Department = {
-  id: number;
-  name: string;
+type DepartmentDetails = {
+  Pediatrics: string;
+  Gynecology: string;
+  Orthopedics: string;
+  Neurology: string;
+  Nephrology: string;
+  Cardiology: string;
+  Gastroenterology: string;
+  Oncology: string;
+  "O.P.D": string;
+  "Otolaryngology (ENT)": string;
 };
 
 type Doctor = {
@@ -24,29 +41,52 @@ type Doctor = {
 };
 
 const Departments = () => {
-  const [departments, setDepartments] = useState<Department[]>([]);
   const [selectedDept, setSelectedDept] = useState<{
     title: string;
     info: string;
     doctors: Doctor[];
   } | null>(null);
+
   const [loading, setLoading] = useState(false); // Loading state
-  const [page, setPage] = useState(1);
   const navigate = useNavigate();
 
-  const fetchDepartments = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from('departments')
-      .select('*')
-      .range((page - 1) * 10, page * 10 - 1);
+  const departmentDetails: DepartmentDetails = {
+    Pediatrics: "Pediatrics focuses on medical care for infants, children, and adolescents.",
+    Gynecology: "Gynecology is dedicated to women's reproductive health and care.",
+    Orthopedics: "Orthopedics deals with bones, joints, and muscles.",
+    Neurology: "Neurology focuses on disorders of the nervous system.",
+    Nephrology: "Nephrology deals with kidney-related disorders.",
+    Cardiology: "Cardiology specializes in heart diseases and conditions.",
+    Gastroenterology: "Gastroenterology deals with the digestive system and its disorders.",
+    Oncology: "Oncology focuses on the treatment of cancer.",
+    "O.P.D": "Outpatient Department (O.P.D) handles general medical consultations.",
+    "Otolaryngology (ENT)": "ENT focuses on ear, nose, and throat conditions.",
+  };
 
-    if (error) {
-      console.error('Error fetching departments:', error);
-    } else {
-      setDepartments(data || []);
-    }
-    setLoading(false);
+// Some dep column code to know : developer side:
+// write this number for the department
+// pediatric : 1
+// gynecology : 2
+// orthopedics : 3
+// neurology : 4
+// Nephrology: 5,
+// Cardiology: 6
+// Gastroenterology: 7
+// Oncology: 8
+// "O.P.D": 9
+// "Otolaryngology (ENT)": 10
+
+  const departmentIds: Record<string, number> = {
+    Pediatrics: 1,
+    Gynecology: 2,
+    Orthopedics: 3,
+    Neurology: 4,
+    Nephrology: 5,
+    Cardiology: 6,
+    Gastroenterology: 7,
+    Oncology: 8,
+    "O.P.D": 9,
+    "Otolaryngology (ENT)": 10,
   };
 
   const fetchDoctors = async (departmentId: number) => {
@@ -56,7 +96,7 @@ const Departments = () => {
       .from('doctors')
       .select('*')
       .eq('department', departmentId);
-
+  
     if (error) {
       console.error('Error fetching doctors:', error);
     } else {
@@ -69,13 +109,14 @@ const Departments = () => {
     setLoading(false); // Stop loading
   };
 
-  const showDetails = async (dept: Department) => {
+  const showDetails = async (dept: keyof DepartmentDetails) => {
+    const departmentId = departmentIds[dept];
     setSelectedDept({
-      title: dept.name,
-      info: `Information about ${dept.name} department.`, // You can fetch or set this info as needed
+      title: dept,
+      info: departmentDetails[dept],
       doctors: [], // Initialize with empty array
     });
-    await fetchDoctors(dept.id); // Fetch doctors after setting the department
+    await fetchDoctors(departmentId); // Fetch doctors after setting the department
   };
 
   const closeDetails = () => {
@@ -85,10 +126,6 @@ const Departments = () => {
   const particlesInit = async (engine: any) => {
     await loadFull(engine);
   };
-
-  useEffect(() => {
-    fetchDepartments();
-  }, [page]);
 
   return (
     <motion.div
@@ -179,59 +216,41 @@ const Departments = () => {
       <div className="bg-white/10 backdrop-blur-md w-full max-w-[1200px] p-10 border-4 border-[#8FBC8F] rounded-2xl shadow-lg z-10">
         <div className="flex justify-between gap-4">
           <div className="flex flex-col gap-6">
-            {departments.slice(0, 5).map((dept, index) => (
+            {["Pediatrics", "Gynecology", "Orthopedics", "Neurology", "Nephrology"].map((dept, index) => (
               <motion.div
-                key={dept.id}
+                key={dept}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
               >
                 <Button
-                  onClick={() => showDetails(dept)}
+                  onClick={() => showDetails(dept as keyof DepartmentDetails)}
                   className="w-[400px] py-8 bg-gradient-to-r from-[#2E8B57] to-[#3CB371] text-white text-2xl font-bold rounded-xl shadow-md hover:from-[#3CB371] hover:to-[#2E8B57] hover:scale-105 hover:rotate-1 hover:skew-x-2 transform-gpu transition-all duration-300"
                 >
-                  {dept.name}
+                  {dept}
                 </Button>
               </motion.div>
             ))}
           </div>
 
           <div className="flex flex-col gap-6">
-            {departments.slice(5, 10).map((dept, index) => (
+            {["Cardiology", "Gastroenterology", "Oncology", "O.P.D", "Otolaryngology (ENT)"].map((dept, index) => (
               <motion.div
-                key={dept.id}
+                key={dept}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: (index + 5) * 0.1, duration: 0.5 }}
               >
                 <Button
-                  onClick={() => showDetails(dept)}
+                  onClick={() => showDetails(dept as keyof DepartmentDetails)}
                   className="w-[400px] py-8 bg-gradient-to-r from-[#2E8B57] to-[#3CB371] text-white text-2xl font-bold rounded-xl shadow-md hover:from-[#3CB371] hover:to-[#2E8B57] hover:scale-105 hover:rotate-1 hover:skew-x-2 transform-gpu transition-all duration-300"
                 >
-                  {dept.name}
+                  {dept}
                 </Button>
               </motion.div>
             ))}
           </div>
         </div>
-      </div>
-
-      {/* Pagination Controls */}
-      <div className="mt-8 z-10 flex gap-4">
-        <Button
-          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-          className="px-8 py-4 bg-[#2E8B57] text-white text-xl font-bold rounded-xl hover:bg-[#3CB371] hover:scale-105 transition-all duration-300"
-          disabled={page === 1}
-        >
-          Previous
-        </Button>
-        <Button
-          onClick={() => setPage((prev) => prev + 1)}
-          className="px-8 py-4 bg-[#2E8B57] text-white text-xl font-bold rounded-xl hover:bg-[#3CB371] hover:scale-105 transition-all duration-300"
-          disabled={departments.length < 10}
-        >
-          Next
-        </Button>
       </div>
 
       {/* Overlay with Blur Effect */}
@@ -284,25 +303,25 @@ const Departments = () => {
 
               {/* Scrollable Doctor Details Box */}
               <div className="bg-[#F5FFFA] p-6 rounded-lg border-2 border-[#8FBC8F] max-h-[400px] overflow-y-auto">
-                <h3 className="text-3xl font-bold text-[#2E8B57] mb-4">
-                  Doctor Details
-                </h3>
-                {loading ? (
-                  <p className="text-xl text-gray-700">Loading doctors...</p>
-                ) : selectedDept.doctors.length === 0 ? (
-                  <p className="text-xl text-gray-700">No doctors found for this department.</p>
-                ) : (
-                  <ul className="text-xl text-gray-700 space-y-2">
-                    {selectedDept.doctors.map((doctor, index) => (
-                      <li key={index}>
-                        <p>👨‍⚕ <strong>Name:</strong> {doctor.name}</p>
-                        <p>🎂 <strong>Age:</strong> {doctor.age}</p>
-                        <p>🏥 <strong>Experience:</strong> {doctor.experience}</p>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
+  <h3 className="text-3xl font-bold text-[#2E8B57] mb-4">
+    Doctor Details
+  </h3>
+  {loading ? (
+    <p className="text-xl text-gray-700">Loading doctors...</p>
+  ) : selectedDept.doctors.length === 0 ? (
+    <p className="text-xl text-gray-700">No doctors found for this department.</p>
+  ) : (
+    <ul className="text-xl text-gray-700 space-y-2">
+      {selectedDept.doctors.map((doctor, index) => (
+        <li key={index}>
+          <p>👨‍⚕ <strong>Name:</strong> {doctor.name}</p>
+          <p>🎂 <strong>Age:</strong> {doctor.age}</p>
+          <p>🏥 <strong>Experience:</strong> {doctor.experience}</p>
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
             </div>
           </motion.div>
         )}
