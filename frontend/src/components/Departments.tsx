@@ -6,8 +6,8 @@ import Particles from "react-tsparticles";
 import { loadFull } from "tsparticles";
 import { supabase } from "@/utils/supabaseClient"; // Import your Supabase client
 
-// Import images for each department (replace with your actual image paths)
-import pediatricsImage from "@/assets/doctor-cabin.jpg"; // Image for Pediatrics
+// Import the default image
+import defaultImage from "@/assets/doctor-cabin.jpg"; // Default image for all departments
 
 type Department = {
   id: number;
@@ -37,12 +37,12 @@ const Departments = () => {
   const fetchDepartments = async () => {
     setLoading(true);
     const { data, error } = await supabase
-      .from('departments')
-      .select('*')
+      .from("departments")
+      .select("*")
       .range((page - 1) * 10, page * 10 - 1);
 
     if (error) {
-      console.error('Error fetching departments:', error);
+      console.error("Error fetching departments:", error);
     } else {
       setDepartments(data || []);
     }
@@ -53,12 +53,12 @@ const Departments = () => {
     setLoading(true); // Start loading
     console.log("Fetching doctors for department:", departmentId);
     const { data, error } = await supabase
-      .from('doctors')
-      .select('*')
-      .eq('department', departmentId);
+      .from("doctors")
+      .select("*")
+      .eq("department", departmentId);
 
     if (error) {
-      console.error('Error fetching doctors:', error);
+      console.error("Error fetching doctors:", error);
     } else {
       console.log("Fetched doctors:", data);
       setSelectedDept((prev) => ({
@@ -261,7 +261,7 @@ const Departments = () => {
             {/* Left Side: Doctor's Cabin Image */}
             <div className="w-1/2 pr-8">
               <img
-                src={selectedDept.doctors[0]?.image || pediatricsImage}
+                src={defaultImage} // Use the default image for all departments
                 alt="Doctor's Cabin"
                 className="w-full h-full object-cover rounded-lg shadow-md"
               />
