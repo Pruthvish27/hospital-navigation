@@ -28,6 +28,9 @@ const AdminPage = () => {
   const [newTableDescription, setNewTableDescription] = useState("");
   const [columns, setColumns] = useState<Column[]>([]);
   const [tableData, setTableData] = useState<Record<string, any>[]>([]);
+  const [showInsertPopup, setShowInsertPopup] = useState(false);
+  const [insertData, setInsertData] = useState<Record<string, any>>({});
+
 
   // Fetch existing tables from the database on component mount
   useEffect(() => {
@@ -114,32 +117,36 @@ const AdminPage = () => {
     }
   };
 
-  const handleInsertRow = async () => {
+  const handleInsertRow = () => {
+    if (!selectedTable) return;
+  
+    const initialData: Record<string, any> = {};
+    selectedTable.columns.forEach((column) => {
+      initialData[column.name] = ""; // Default empty input
+    });
+  
+    setInsertData(initialData);
+    setShowInsertPopup(true);
+  };
+
+  const handleSubmitInsert = async () => {
     if (!selectedTable) return;
   
     try {
-      const data: Record<string, any> = {};
-      for (const column of selectedTable.columns) {
-        const value = prompt(`Enter value for ${column.name}:`);
-        if (value === null) {
-          toast.info("Insertion canceled by user");
-          return;
-        }
-        data[column.name] = value;
-      }
-  
-      const { error: insertError } = await supabase
+      const { error } = await supabase
         .from(selectedTable.name.toLowerCase().replace(/\s+/g, "_"))
-        .insert([data]);
+        .insert([insertData]);
   
-      if (insertError) {
+      if (error) {
         toast.error("Error inserting data");
-        console.error("Error inserting data:", insertError);
+        console.error("Error inserting data:", error);
         return;
       }
   
       toast.success("Data inserted successfully");
+      setShowInsertPopup(false); // Close the popup
   
+      // Fetch updated table data
       const { data: newData, error: fetchError } = await supabase
         .from(selectedTable.name.toLowerCase().replace(/\s+/g, "_"))
         .select("*");
@@ -156,6 +163,7 @@ const AdminPage = () => {
       console.error("Unexpected error:", err);
     }
   };
+  
 
   const handleDeleteTable = async () => {
     if (!selectedTable) return; // Ensure a table is selected
@@ -200,213 +208,213 @@ const AdminPage = () => {
     }
   };
 
-  const handleAddColumnToTable = async () => {
-    if (!selectedTable) return; // Ensure a table is selected
+  // const handleAddColumnToTable = async () => {
+  //   if (!selectedTable) return; // Ensure a table is selected
 
-    // Step 1: Prompt for column details
-    const columnName = prompt("Enter the name of the new column:");
-    if (!columnName) return; // Exit if the user cancels the prompt
+  //   // Step 1: Prompt for column details
+  //   const columnName = prompt("Enter the name of the new column:");
+  //   if (!columnName) return; // Exit if the user cancels the prompt
 
-    const columnType = prompt("Enter the type of the new column (text, number, date):");
-    if (!columnType) return; // Exit if the user cancels the prompt
+  //   const columnType = prompt("Enter the type of the new column (text, number, date):");
+  //   if (!columnType) return; // Exit if the user cancels the prompt
 
-    const defaultValue = prompt("Enter the default value for the column (leave blank for none):");
+  //   const defaultValue = prompt("Enter the default value for the column (leave blank for none):");
 
-    const isPrimary = window.confirm("Should this column be a primary key?");
+  //   const isPrimary = window.confirm("Should this column be a primary key?");
 
-    // Check if a primary key already exists
-    if (isPrimary && selectedTable.columns.some((col) => col.isPrimary)) {
-      alert("A primary key already exists for this table. Only one primary key is allowed.");
-      return;
-    }
+  //   // Check if a primary key already exists
+  //   if (isPrimary && selectedTable.columns.some((col) => col.isPrimary)) {
+  //     alert("A primary key already exists for this table. Only one primary key is allowed.");
+  //     return;
+  //   }
 
-    try {
-      // Step 2: Add the column to the table in Supabase
-      const tableName = selectedTable.name.toLowerCase().replace(/\s+/g, "_"); // Ensure the table name is valid
-      const sqlType = columnType === "number" ? "integer" : columnType; // Map "number" to "integer"
+  //   try {
+  //     // Step 2: Add the column to the table in Supabase
+  //     const tableName = selectedTable.name.toLowerCase().replace(/\s+/g, "_"); // Ensure the table name is valid
+  //     const sqlType = columnType === "number" ? "integer" : columnType; // Map "number" to "integer"
 
-      // Construct the SQL query
-      let addColumnQuery = `
-        ALTER TABLE ${tableName}
-        ADD COLUMN ${columnName} ${sqlType} ${defaultValue ? `DEFAULT '${defaultValue}'` : ""};
-      `;
+  //     // Construct the SQL query
+  //     let addColumnQuery = `
+  //       ALTER TABLE ${tableName}
+  //       ADD COLUMN ${columnName} ${sqlType} ${defaultValue ? `DEFAULT '${defaultValue}'` : ""};
+  //     `;
 
-      // If the column is a primary key, add the PRIMARY KEY constraint
-      if (isPrimary) {
-        addColumnQuery = `
-          ALTER TABLE ${tableName}
-          ADD COLUMN ${columnName} ${sqlType} ${defaultValue ? `DEFAULT '${defaultValue}'` : ""} PRIMARY KEY;
-        `;
-      }
+  //     // If the column is a primary key, add the PRIMARY KEY constraint
+  //     if (isPrimary) {
+  //       addColumnQuery = `
+  //         ALTER TABLE ${tableName}
+  //         ADD COLUMN ${columnName} ${sqlType} ${defaultValue ? `DEFAULT '${defaultValue}'` : ""} PRIMARY KEY;
+  //       `;
+  //     }
 
-      // Execute the SQL query to add the column
-      const { data: addColumnData, error: addColumnError } = await supabase
-        .rpc("execute_sql", { sql: addColumnQuery });
+  //     // Execute the SQL query to add the column
+  //     const { data: addColumnData, error: addColumnError } = await supabase
+  //       .rpc("execute_sql", { sql: addColumnQuery });
 
-      if (addColumnError) {
-        console.error("Error adding column:", addColumnError);
-        return;
-      }
+  //     if (addColumnError) {
+  //       console.error("Error adding column:", addColumnError);
+  //       return;
+  //     }
 
-      console.log("Column added successfully:", addColumnData);
+  //     console.log("Column added successfully:", addColumnData);
 
-      // Step 3: Update the table metadata in the `tables` table
-      const updatedColumns = [
-        ...selectedTable.columns,
-        { name: columnName, type: columnType, defaultValue: defaultValue || "", isPrimary },
-      ];
-      const { error: updateMetadataError } = await supabase
-        .from("tables")
-        .update({ columns: updatedColumns })
-        .eq("name", selectedTable.name);
+  //     // Step 3: Update the table metadata in the `tables` table
+  //     const updatedColumns = [
+  //       ...selectedTable.columns,
+  //       { name: columnName, type: columnType, defaultValue: defaultValue || "", isPrimary },
+  //     ];
+  //     const { error: updateMetadataError } = await supabase
+  //       .from("tables")
+  //       .update({ columns: updatedColumns })
+  //       .eq("name", selectedTable.name);
 
-      if (updateMetadataError) {
-        console.error("Error updating table metadata:", updateMetadataError);
-        return;
-      }
+  //     if (updateMetadataError) {
+  //       console.error("Error updating table metadata:", updateMetadataError);
+  //       return;
+  //     }
 
-      console.log("Table metadata updated successfully");
+  //     console.log("Table metadata updated successfully");
 
-      // Step 4: Update the UI
-      setSelectedTable({ ...selectedTable, columns: updatedColumns });
-      setTables(tables.map((table) =>
-        table.name === selectedTable.name ? { ...table, columns: updatedColumns } : table
-      ));
-    } catch (err) {
-      console.error("Unexpected error:", err);
-    }
-  };
+  //     // Step 4: Update the UI
+  //     setSelectedTable({ ...selectedTable, columns: updatedColumns });
+  //     setTables(tables.map((table) =>
+  //       table.name === selectedTable.name ? { ...table, columns: updatedColumns } : table
+  //     ));
+  //   } catch (err) {
+  //     console.error("Unexpected error:", err);
+  //   }
+  // };
 
-  const handleRemoveColumnFromTable = async () => {
-    if (!selectedTable) return; // Ensure a table is selected
+  // const handleRemoveColumnFromTable = async () => {
+  //   if (!selectedTable) return; // Ensure a table is selected
 
-    if (selectedTable.columns.length === 0) {
-      alert("No columns to remove!");
-      return;
-    }
+  //   if (selectedTable.columns.length === 0) {
+  //     alert("No columns to remove!");
+  //     return;
+  //   }
 
-    const columnName = prompt("Enter the name of the column to remove:");
-    if (!columnName) return; // Exit if the user cancels the prompt
+  //   const columnName = prompt("Enter the name of the column to remove:");
+  //   if (!columnName) return; // Exit if the user cancels the prompt
 
-    const columnToRemove = selectedTable.columns.find((col) => col.name === columnName);
-    if (!columnToRemove) {
-      alert("Column not found!");
-      return;
-    }
+  //   const columnToRemove = selectedTable.columns.find((col) => col.name === columnName);
+  //   if (!columnToRemove) {
+  //     alert("Column not found!");
+  //     return;
+  //   }
 
-    const confirmRemove = window.confirm(`Are you sure you want to remove the column "${columnName}"?`);
-    if (!confirmRemove) return; // Exit if the user cancels the confirmation
+  //   const confirmRemove = window.confirm(`Are you sure you want to remove the column "${columnName}"?`);
+  //   if (!confirmRemove) return; // Exit if the user cancels the confirmation
 
-    try {
-      // Step 1: Remove the column from the table in Supabase
-      const tableName = selectedTable.name.toLowerCase().replace(/\s+/g, "_"); // Ensure the table name is valid
-      const removeColumnQuery = `
-        ALTER TABLE ${tableName}
-        DROP COLUMN ${columnName};
-      `;
+  //   try {
+  //     // Step 1: Remove the column from the table in Supabase
+  //     const tableName = selectedTable.name.toLowerCase().replace(/\s+/g, "_"); // Ensure the table name is valid
+  //     const removeColumnQuery = `
+  //       ALTER TABLE ${tableName}
+  //       DROP COLUMN ${columnName};
+  //     `;
 
-      const { data: removeColumnData, error: removeColumnError } = await supabase
-        .rpc("execute_sql", { sql: removeColumnQuery });
+  //     const { data: removeColumnData, error: removeColumnError } = await supabase
+  //       .rpc("execute_sql", { sql: removeColumnQuery });
 
-      if (removeColumnError) {
-        console.error("Error removing column:", removeColumnError);
-        return;
-      }
+  //     if (removeColumnError) {
+  //       console.error("Error removing column:", removeColumnError);
+  //       return;
+  //     }
 
-      console.log("Column removed successfully:", removeColumnData);
+  //     console.log("Column removed successfully:", removeColumnData);
 
-      // Step 2: Update the table metadata in the `tables` table
-      const updatedColumns = selectedTable.columns.filter((col) => col.name !== columnName);
-      const { error: updateMetadataError } = await supabase
-        .from("tables")
-        .update({ columns: updatedColumns })
-        .eq("name", selectedTable.name);
+  //     // Step 2: Update the table metadata in the `tables` table
+  //     const updatedColumns = selectedTable.columns.filter((col) => col.name !== columnName);
+  //     const { error: updateMetadataError } = await supabase
+  //       .from("tables")
+  //       .update({ columns: updatedColumns })
+  //       .eq("name", selectedTable.name);
 
-      if (updateMetadataError) {
-        console.error("Error updating table metadata:", updateMetadataError);
-        return;
-      }
+  //     if (updateMetadataError) {
+  //       console.error("Error updating table metadata:", updateMetadataError);
+  //       return;
+  //     }
 
-      console.log("Table metadata updated successfully");
+  //     console.log("Table metadata updated successfully");
 
-      // Step 3: Update the UI
-      setSelectedTable({ ...selectedTable, columns: updatedColumns });
-      setTables(tables.map((table) =>
-        table.name === selectedTable.name ? { ...table, columns: updatedColumns } : table
-      ));
-    } catch (err) {
-      console.error("Unexpected error:", err);
-    }
-  };
+  //     // Step 3: Update the UI
+  //     setSelectedTable({ ...selectedTable, columns: updatedColumns });
+  //     setTables(tables.map((table) =>
+  //       table.name === selectedTable.name ? { ...table, columns: updatedColumns } : table
+  //     ));
+  //   } catch (err) {
+  //     console.error("Unexpected error:", err);
+  //   }
+  // };
 
-  const handleEditColumn = async () => {
-    if (!selectedTable) return; // Ensure a table is selected
+  // const handleEditColumn = async () => {
+  //   if (!selectedTable) return; // Ensure a table is selected
 
-    const columnName = prompt("Enter the name of the column to edit:");
-    if (!columnName) return; // Exit if the user cancels the prompt
+  //   const columnName = prompt("Enter the name of the column to edit:");
+  //   if (!columnName) return; // Exit if the user cancels the prompt
 
-    const columnToEdit = selectedTable.columns.find((col) => col.name === columnName);
-    if (!columnToEdit) {
-      alert("Column not found!");
-      return;
-    }
+  //   const columnToEdit = selectedTable.columns.find((col) => col.name === columnName);
+  //   if (!columnToEdit) {
+  //     alert("Column not found!");
+  //     return;
+  //   }
 
-    const newColumnName = prompt("Enter the new name for the column:", columnToEdit.name);
-    if (!newColumnName) return; // Exit if the user cancels the prompt
+  //   const newColumnName = prompt("Enter the new name for the column:", columnToEdit.name);
+  //   if (!newColumnName) return; // Exit if the user cancels the prompt
 
-    const newColumnType = prompt("Enter the new type for the column (text, number, date):", columnToEdit.type);
-    if (!newColumnType) return; // Exit if the user cancels the prompt
+  //   const newColumnType = prompt("Enter the new type for the column (text, number, date):", columnToEdit.type);
+  //   if (!newColumnType) return; // Exit if the user cancels the prompt
 
-    const newDefaultValue = prompt("Enter the new default value for the column (leave blank for none):", columnToEdit.defaultValue);
+  //   const newDefaultValue = prompt("Enter the new default value for the column (leave blank for none):", columnToEdit.defaultValue);
 
-    const newIsPrimary = window.confirm("Should this column be a primary key?");
+  //   const newIsPrimary = window.confirm("Should this column be a primary key?");
 
-    try {
-      // Step 1: Update the column in the table in Supabase
-      const tableName = selectedTable.name.toLowerCase().replace(/\s+/g, "_"); // Ensure the table name is valid
-      const sqlType = newColumnType === "number" ? "integer" : newColumnType; // Map "number" to "integer"
-      const updateColumnQuery = `
-        ALTER TABLE ${tableName}
-        ALTER COLUMN ${columnName} TYPE ${sqlType} ${newDefaultValue ? `DEFAULT '${newDefaultValue}'` : ""} ${newIsPrimary ? "PRIMARY KEY" : ""};
-      `;
+  //   try {
+  //     // Step 1: Update the column in the table in Supabase
+  //     const tableName = selectedTable.name.toLowerCase().replace(/\s+/g, "_"); // Ensure the table name is valid
+  //     const sqlType = newColumnType === "number" ? "integer" : newColumnType; // Map "number" to "integer"
+  //     const updateColumnQuery = `
+  //       ALTER TABLE ${tableName}
+  //       ALTER COLUMN ${columnName} TYPE ${sqlType} ${newDefaultValue ? `DEFAULT '${newDefaultValue}'` : ""} ${newIsPrimary ? "PRIMARY KEY" : ""};
+  //     `;
 
-      const { data: updateColumnData, error: updateColumnError } = await supabase
-        .rpc("execute_sql", { sql: updateColumnQuery });
+  //     const { data: updateColumnData, error: updateColumnError } = await supabase
+  //       .rpc("execute_sql", { sql: updateColumnQuery });
 
-      if (updateColumnError) {
-        console.error("Error updating column:", updateColumnError);
-        return;
-      }
+  //     if (updateColumnError) {
+  //       console.error("Error updating column:", updateColumnError);
+  //       return;
+  //     }
 
-      console.log("Column updated successfully:", updateColumnData);
+  //     console.log("Column updated successfully:", updateColumnData);
 
-      // Step 2: Update the table metadata in the `tables` table
-      const updatedColumns = selectedTable.columns.map((col) =>
-        col.name === columnName
-          ? { name: newColumnName, type: newColumnType, defaultValue: newDefaultValue || "", isPrimary: newIsPrimary }
-          : col
-      );
-      const { error: updateMetadataError } = await supabase
-        .from("tables")
-        .update({ columns: updatedColumns })
-        .eq("name", selectedTable.name);
+  //     // Step 2: Update the table metadata in the `tables` table
+  //     const updatedColumns = selectedTable.columns.map((col) =>
+  //       col.name === columnName
+  //         ? { name: newColumnName, type: newColumnType, defaultValue: newDefaultValue || "", isPrimary: newIsPrimary }
+  //         : col
+  //     );
+  //     const { error: updateMetadataError } = await supabase
+  //       .from("tables")
+  //       .update({ columns: updatedColumns })
+  //       .eq("name", selectedTable.name);
 
-      if (updateMetadataError) {
-        console.error("Error updating table metadata:", updateMetadataError);
-        return;
-      }
+  //     if (updateMetadataError) {
+  //       console.error("Error updating table metadata:", updateMetadataError);
+  //       return;
+  //     }
 
-      console.log("Table metadata updated successfully");
+  //     console.log("Table metadata updated successfully");
 
-      // Step 3: Update the UI
-      setSelectedTable({ ...selectedTable, columns: updatedColumns });
-      setTables(tables.map((table) =>
-        table.name === selectedTable.name ? { ...table, columns: updatedColumns } : table
-      ));
-    } catch (err) {
-      console.error("Unexpected error:", err);
-    }
-  };
+  //     // Step 3: Update the UI
+  //     setSelectedTable({ ...selectedTable, columns: updatedColumns });
+  //     setTables(tables.map((table) =>
+  //       table.name === selectedTable.name ? { ...table, columns: updatedColumns } : table
+  //     ));
+  //   } catch (err) {
+  //     console.error("Unexpected error:", err);
+  //   }
+  // };
 
   const handleEditRow = async (row: Record<string, any>) => {
     if (!selectedTable) return;
@@ -569,26 +577,26 @@ const AdminPage = () => {
                     onClick={handleInsertRow}
                     className="px-6 py-3 bg-[#2E8B57] text-white text-lg font-bold rounded-lg shadow-md hover:bg-[#3CB371] hover:scale-105 transition-all duration-300"
                   >
-                    Insert Row
+                    Add Details
                   </Button>
-                  <Button
+                  {/* <Button
                     onClick={handleAddColumnToTable}
                     className="px-6 py-3 bg-blue-500 text-white text-lg font-bold rounded-lg shadow-md hover:bg-blue-600 hover:scale-105 transition-all duration-300"
                   >
                     Add Column
-                  </Button>
-                  <Button
+                  </Button> */}
+                  {/* <Button
                     onClick={handleRemoveColumnFromTable}
                     className="px-6 py-3 bg-orange-500 text-white text-lg font-bold rounded-lg shadow-md hover:bg-orange-600 hover:scale-105 transition-all duration-300"
                   >
                     Remove Column
-                  </Button>
-                  <Button
+                  </Button> */}
+                  {/* <Button
                     onClick={handleEditColumn}
                     className="px-6 py-3 bg-purple-500 text-white text-lg font-bold rounded-lg shadow-md hover:bg-purple-600 hover:scale-105 transition-all duration-300"
                   >
                     Edit Column
-                  </Button>
+                  </Button> */}
                   <Button
                     onClick={handleDeleteTable}
                     className="px-6 py-3 bg-red-500 text-white text-lg font-bold rounded-lg shadow-md hover:bg-red-600 hover:scale-105 transition-all duration-300"
@@ -757,6 +765,34 @@ const AdminPage = () => {
           </div>
         </div>
       )}
+
+      {showInsertPopup && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+      <h2 className="text-xl font-bold mb-4">Insert Data</h2>
+      {selectedTable.columns.map((column, index) => (
+        <div key={index} className="mb-3">
+          <label className="block text-sm font-medium text-gray-700">{column.name}</label>
+          <input
+            type="text"
+            value={insertData[column.name] || ""}
+            onChange={(e) => setInsertData({ ...insertData, [column.name]: e.target.value })}
+            className="w-full p-2 border rounded-lg"
+          />
+        </div>
+      ))}
+      <div className="flex justify-end mt-4">
+        <Button onClick={() => setShowInsertPopup(false)} className="mr-2 bg-red-500 hover:bg-red-600">
+          Cancel
+        </Button>
+        <Button onClick={handleSubmitInsert} className="bg-green-500 hover:bg-green-600">
+          Insert
+        </Button>
+      </div>
+    </div>
+  </div>
+)}
+
     </motion.div>
   );
 };

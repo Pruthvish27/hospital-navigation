@@ -2,20 +2,99 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { supabase } from '@/utils/supabaseClient'; // Adjust the import path as necessary
 
 const RoomInfo = () => {
   const [showDetails, setShowDetails] = useState(false);
   const [selectedFloor, setSelectedFloor] = useState("");
   const [isAnimating, setIsAnimating] = useState(false);
+  const [roomNumber, setRoomNumber] = useState("");
+  const [roomInfo, setRoomInfo] = useState(null);
+  const [floorRooms, setFloorRooms] = useState([]); // All rooms on the selected floor
+  const [floors, setFloors] = useState([]); // All unique floors fetched from Supabase
   const navigate = useNavigate();
 
-  const handleShowDetails = (floor: string) => {
+  // Fetch all unique floors from Supabase
+  const fetchFloors = async () => {
+    const { data: floorsData, error: floorsError } = await supabase
+      .from('rooms')
+      .select('floor')
+      .order('floor', { ascending: true });
+
+    if (floorsError) {
+      console.error('Error fetching floors:', floorsError);
+      alert('Failed to fetch floors.');
+      return;
+    }
+
+    if (floorsData) {
+      // Extract unique floors
+      const uniqueFloors = [...new Set(floorsData.map((room) => room.floor))];
+      setFloors(uniqueFloors);
+    }
+  };
+
+  // Fetch all rooms on a specific floor
+  const fetchFloorRooms = async (floor) => {
+    const { data: floorRoomsData, error: floorRoomsError } = await supabase
+      .from('rooms')
+      .select('*')
+      .eq('floor', floor);
+
+    if (floorRoomsError) {
+      console.error('Error fetching floor rooms:', floorRoomsError);
+      alert('Failed to fetch floor rooms.');
+      return;
+    }
+
+    if (floorRoomsData) {
+      console.log('Fetched floor rooms:', floorRoomsData); // Debugging log
+      setFloorRooms(floorRoomsData); // Set all rooms on the floor
+    }
+  };
+
+  // Handle room search
+  const handleSearch = async () => {
+    if (!roomNumber) return;
+
+    const { data: roomData, error: roomError } = await supabase
+      .from('rooms')
+      .select('*')
+      .eq('room_number', roomNumber)
+      .single();
+
+    if (roomError) {
+      console.error('Error fetching room info:', roomError);
+      alert('Failed to fetch room information.');
+      return;
+    }
+
+    if (roomData) {
+      setRoomInfo(roomData);
+      setFloorRooms([]); // Clear floor rooms
+      handleShowDetails(roomData.floor); // Show details for the floor
+    } else {
+      alert('Room not found.');
+    }
+  };
+
+  // Handle floor click
+  const handleFloorClick = async (floor) => {
+    setSelectedFloor(floor);
+    setRoomInfo(null); // Clear room info
+    await fetchFloorRooms(floor); // Fetch rooms for the selected floor
+    handleShowDetails(floor); // Show details for the floor
+  };
+
+  // Show details modal
+  const handleShowDetails = (floor) => {
     setSelectedFloor(floor);
     setShowDetails(true);
     setIsAnimating(true);
     document.body.classList.add("overflow-hidden");
   };
 
+  // Close details modal
   const handleCloseDetails = () => {
     setIsAnimating(false);
     setTimeout(() => {
@@ -24,13 +103,10 @@ const RoomInfo = () => {
     }, 300);
   };
 
+  // Fetch floors on component mount
   useEffect(() => {
-    if (showDetails) {
-      setIsAnimating(true);
-    }
-  }, [showDetails]);
-
-  const floors = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th"];
+    fetchFloors();
+  }, []);
 
   const blockVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -59,8 +135,13 @@ const RoomInfo = () => {
             id="room-number"
             placeholder="Enter room no."
             className="w-[60%] p-2 border-2 border-[#8FBC8F] rounded-lg text-lg"
+            value={roomNumber}
+            onChange={(e) => setRoomNumber(e.target.value)}
           />
-          <Button className="px-5 py-2 bg-white text-[#2E8B57] text-lg font-bold border-2 border-[#2E8B57] rounded-lg hover:bg-[#3CB371] hover:text-white transition-all duration-300">
+          <Button 
+            onClick={handleSearch}
+            className="px-5 py-2 bg-white text-[#2E8B57] text-lg font-bold border-2 border-[#2E8B57] rounded-lg hover:bg-[#3CB371] hover:text-white transition-all duration-300"
+          >
             Search
           </Button>
         </div>
@@ -81,7 +162,7 @@ const RoomInfo = () => {
                 <div className="flex justify-between items-center p-3 border-b-2 border-[#2E8B57] hover:bg-[#E0F8E0] transition-all duration-300">
                   <span className="text-xl">{floor} Floor</span>
                   <Button
-                    onClick={() => handleShowDetails(floor)}
+                    onClick={() => handleFloorClick(floor)}
                     className="px-5 py-2 bg-white text-[#2E8B57] text-lg font-bold border-2 border-[#2E8B57] rounded-lg hover:bg-[#3CB371] hover:text-white transition-all duration-300"
                   >
                     Detail
@@ -115,9 +196,46 @@ const RoomInfo = () => {
           <h2 className="text-3xl font-bold text-[#2E8B57] mb-6 text-center">
             {selectedFloor} Floor Details
           </h2>
-          <p className="text-lg text-gray-700 text-center">
-            Details about {selectedFloor} floor...
-          </p>
+          {roomInfo && (
+            <div className="text-lg text-gray-700 mb-6">
+              <p><strong>Room Number:</strong> {roomInfo.room_number}</p>
+              <p>
+                <strong>Status:</strong>{" "}
+                <span
+                  className={`font-bold ${
+                    roomInfo.available === 1 ? "text-green-600" : "text-red-600"
+                  }`}
+                >
+                  {roomInfo.available === 1 ? "Room is Available" : "Room is Occupied"}
+                </span>
+              </p>
+            </div>
+          )}
+          {!roomInfo && (
+            <div className="text-lg text-gray-700">
+              <h3 className="text-2xl font-bold text-[#2E8B57] mb-4">Rooms on {selectedFloor} Floor:</h3>
+              <ul className="space-y-2">
+                {floorRooms.map((room) => (
+                  <li
+                    key={room.room_number}
+                    className={`p-2 rounded-lg ${
+                      room.available === 1 ? "bg-green-100" : "bg-red-100"
+                    }`}
+                  >
+                    <strong>Room Number:</strong> {room.room_number} |{" "}
+                    <strong>Status:</strong>{" "}
+                    <span
+                      className={`font-bold ${
+                        room.available === 1 ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {room.available === 1 ? "Room is Available" : "Room is Occupied"}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
 
